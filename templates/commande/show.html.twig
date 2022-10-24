@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande{% endblock %}
+
+{% block body %}
+    <h1>Commande</h1>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Identifiant</th>
+            <td>{{ commande.id }}</td>
+        </tr>
+        <tr>
+            <th>Date prise commande</th>
+            <td>{{ commande.datePriseCommande ? commande.datePriseCommande|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY HH:mm") : '' }}</td>
+        </tr>
+        <tr>
+            <th>Date livraison souhaitée</th>
+            <td>{{ commande.dateLivraisonSouhaitee ? commande.dateLivraisonSouhaitee|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY HH:mm") : '' }}</td>
+        </tr>
+        <tr>
+            <th>Date livraison</th>
+            <td>{{ commande.dateLivraison ? commande.dateLivraison|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY HH:mm") : "Non livré" }}</td>
+        </tr>
+        <tr>
+            <th>Livraison domicile</th>
+            <td>{{ commande.livraisonDomicile ? 'Oui' : 'Non' }}</td>
+        </tr>
+        <tr>
+            <th>Montant</th>
+            <td>{{ commande.montant|number_format(2) }} €</td>
+        </tr>
+        <tr>
+            <th>Commande</th>
+            <td>{{ commande.commande|nl2br }}</td>
+        </tr>
+        <tr>
+            <th>Mode paiement</th>
+            <td>{{ commande.modePaiement ?? 'Non payé' }}</td>
+        </tr>
+        <tr>
+            <th>Statut</th>
+            <td>{% if commande.dateLivraison %}
+                    <h5><span class="badge badge-success">Livrée</span></h5>
+                {% else %}
+                    {% if commande.prete %}
+                        <h5><span class="badge badge-warning">Prête</span></h5>
+                    {% else %}
+                        <h5><span class="badge badge-danger">À préparer</span></h5>
+                    {% endif %}
+                {% endif %}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_commande_index') }}">Retour</a>
+
+    <a href="{{ path('app_commande_edit', {'id': commande.id}) }}">Editer</a>
+
+    {{ include('commande/_delete_form.html.twig') }}
+{% endblock %}

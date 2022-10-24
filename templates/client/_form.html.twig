@@ -1,0 +1,24 @@
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-3">
+        {{ form_row(form.nom) }}
+    </div>
+    <div class="col-3">
+        {{ form_row(form.prenom) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-3">
+        {{ form_row(form.pseudo_facebook) }}
+    </div>
+    <div class="col-3">
+        {{ form_row(form.telephone) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        {{ form_row(form.commentaire) }}
+    </div>
+</div>
+<button class="btn btn-info">{{ button_label|default('Sauvegarder') }}</button>
+{{ form_end(form) }}

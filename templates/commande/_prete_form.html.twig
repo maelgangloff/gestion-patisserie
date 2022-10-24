@@ -1,0 +1,5 @@
+<form method="post" action="{{ path('app_commande_prete', {'id': commande.id}) }}"
+      onsubmit="return confirm('Êtes-vous sûr que cette commande à été préparée ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('prete' ~ commande.id) }}">
+    <button class="btn btn-warning btn-block">Préparée ?</button>
+</form>

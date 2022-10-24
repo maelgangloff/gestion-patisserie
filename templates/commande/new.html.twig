@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle commande{% endblock %}
+
+{% block body %}
+    <h1>Nouvelle commande</h1>
+    <a href="{{ path('app_client_new') }}">
+        <button class="btn btn-sm btn-primary">Créer un client</button>
+    </a>
+    <br><br>
+    {{ include('commande/_form.html.twig') }}
+
+    <a href="{{ path('app_commande_index') }}">Retour</a>
+{% endblock %}
+{% block javascripts %}
+    <script type="application/javascript">
+        $('#commande_client').select2()
+    </script>
+{% endblock %}

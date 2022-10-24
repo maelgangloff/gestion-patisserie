@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes statistiques{% endblock %}
+
+{% block body %}
+    <h1>Statistiques</h1>
+    <br>
+    <a class="btn btn-secondary" href="{{ path('admin') }}">Retour</a>
+    <div class="btn-group float-right">
+        <a class="btn btn-dark" href="{{ path('rapport') }}">Télécharger le rapport</a>
+        <a class="btn btn-secondary" href="{{ path('download_invoices') }}">Télécharger toutes les factures</a>
+    </div>
+    <br>
+    <br>
+    <h2>Comptabilité du mois</h2>
+    <table class="table table-hover" id="compta-mois">
+        <thead>
+        <tr>
+            <th scope="col">Référence</th>
+            <th scope="col">Date de livraison</th>
+            <th scope="col">Client</th>
+            <th scope="col">Moyen paiement</th>
+            <th scope="col">Montant</th>
+            <th scope="col">Facture</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for commande in commandes|filter(c => c.modePaiement is not null and c.modePaiement != 'ACC' and c.modePaiement != 'NP') %}
+            <tr>
+                <td><b>{{ societe_acronyme ~ commande.dateLivraisonSouhaitee|date('Ym') ~ '%05d'|format(commande.id) }}</b></td>
+                <td>{{ commande.dateLivraison|format_datetime(locale='fr') }}</td>
+                <td>{{ commande.client.nom }} {{ commande.client.prenom }}</td>
+                <td>
+                    {% if commande.modePaiement == 'ESP' %}
+                        <span class="badge badge-warning">Espèces</span>
+                    {% elseif commande.modePaiement == 'CB' %}
+                        <span class="badge badge-primary">Carte bancaire</span>
+                    {% elseif commande.modePaiement == 'CHQ' %}
+                        <span class="badge badge-info">Chèque</span>
+                    {% elseif commande.modePaiement == 'VIR' %}
+                        <span class="badge badge-info">Virement</span>
+                    {% endif %}
+                </td>
+                <td><b>{{ commande.montant|number_format(2) }} €</b></td>
+                <td><a class='btn btn-primary btn-sm' href="{{ path('app_commande_facture', {'id': commande.id}) }}">Facture</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% block javascripts %}
+        <script type="application/javascript">
+            $('#compta-mois').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json'
+                },
+                pageLength: 50,
+                aaSorting: [],
+            })
+        </script>
+    {% endblock %}
+{% endblock %}

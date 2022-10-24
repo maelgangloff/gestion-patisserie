@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editer une commande{% endblock %}
+
+{% block body %}
+    <h1>Editer une commande</h1>
+
+    {{ include('commande/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
+    <a href="{{ path('app_commande_index') }}">Retour</a>
+
+    {{ include('commande/_delete_form.html.twig') }}
+{% endblock %}
+{% block javascripts %}
+    <script type="application/javascript">
+        $('#commande_client').select2()
+    </script>
+{% endblock %}

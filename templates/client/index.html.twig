@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste de mes clients{% endblock %}
+
+{% block body %}
+    <div class="jumbotron">
+        <div class="btn-group float-right">
+            <a class="btn btn-primary" href="{{ path('app_client_new') }}">Nouveau client</a>
+            <a class="btn btn-secondary" href="{{ path('admin') }}">Retour</a>
+        </div>
+        <h1 class="display-6">Liste des clients</h1>
+        <hr class="my-4">
+        <table class="table table-bordered" id="liste-clients">
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Contact</th>
+                <th>Commentaire</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for client in clients|sort((a,b) => a.nom <=> b.nom) %}
+                <tr>
+                    <td>{{ client.nom }}</td>
+                    <td>{{ client.prenom }}</td>
+                    <td>
+                        <div class="btn-group">
+                            {% if client.pseudoFacebook is not empty %}
+                                <a href="https://m.me/{{ client.pseudoFacebook }}" target="_blank">
+                                    <button class="btn btn-primary m-1">Messenger</button>
+                                </a>
+                            {% endif %}
+                            {% if client.telephone is not empty %}
+                                <a href="sms:{{ client.telephone }}">
+                                    <button class="btn btn-secondary m-1">SMS</button>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>{{ client.commentaire|nl2br }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a class='btn btn-sm btn-dark'
+                               href="{{ path('app_client_show', {'id': client.id}) }}">Voir</a>
+                            <a class='btn btn-sm btn-secondary' href="{{ path('app_client_edit', {'id': client.id}) }}">Editer</a>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7">Aucun client</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script type="application/javascript">
+        $('#liste-clients').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json'
+            },
+            pageLength: 50,
+            aaSorting: []
+        })
+    </script>
+{% endblock %}

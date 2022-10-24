@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ societe }}{% endblock %}
+
+{% block body %}
+    <div class="jumbotron">
+        <h1 class="display-4">{{ societe }}</h1>
+        <div class="lead">Bienvenue sur le portail de gestion des commandes de votre entreprise.</div>
+        <hr class="my-4">
+        <div class="alert alert-info">
+            {% set commandesMoisEtNonLivrees = commandes|filter(c => c.dateLivraison is null or c.modePaiement == 'ACC' or c.modePaiement == 'NP' or (c.dateLivraison|date('m') == 'now'|date('m') and c.dateLivraison|date('Y') == 'now'|date('Y'))) %}
+            {% if commandesMoisEtNonLivrees is not empty %}
+            <div class="progress" style="height: 30px">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ (commandesMoisEtNonLivrees|filter(c => c.prete == 1)|length/commandesMoisEtNonLivrees|length)*100 }}%"><h5>{{ commandesMoisEtNonLivrees|filter(c => c.prete == 1)|length }} prêtes</h5></div>
+                <div class="progress-bar bg-danger" style="width: {{ (commandesMoisEtNonLivrees|filter(c => c.prete == 0)|length/commandesMoisEtNonLivrees|length)*100 }}%"><h5>{{ commandesMoisEtNonLivrees|filter(c => c.prete == 0)|length }} à préparer</h5></div>
+            </div>
+                {% endif %}
+            <br>
+            {% set prochaineCommandeALivrer = commandesMoisEtNonLivrees|sort((a,b) => a.dateLivraisonSouhaitee > b.dateLivraisonSouhaitee)|filter(c => c.dateLivraison is null)|first %}
+            {% if prochaineCommandeALivrer is not empty %}
+            La prochaine commande devra être livrée le
+            <b>{{ prochaineCommandeALivrer.dateLivraisonSouhaitee|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY") }}</b> pour un montant de
+            <b>{{ prochaineCommandeALivrer.montant }} €</b>,
+            <b>{{ prochaineCommandeALivrer.livraisonDomicile ? 'avec' : 'sans' }}</b> livraison à domicile.
+            {% endif %}<br>
+            <br>
+            Les entrées actuelles du mois en cours sont de
+            <b>{{ chiffreAffaireMois|number_format(2, '.', ' ') }} €</b> sur <b>{{ chiffreAffairePrevisionnelMois|number_format(2, '.', ' ') }} €</b> en prévision.<br>
+            Le chiffre d'affaires prévisionnel du mois prochain est de
+            <b>{{ chiffreAffaireMoisPrevisionnelProchain|number_format(2, '.', ' ') }} €.</b>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <a href="{{ path('app_client_index') }}">
+                    <button class="btn btn-info w-100 btn-lg mb-2">👥 Mes clients</button>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{{ path('app_commande_index') }}">
+                    <button class="btn btn-info w-100 btn-lg mb-2">🍰 Commandes du mois</button>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{{ path('administratif') }}">
+                    <button class="btn btn-info w-100 btn-lg mb-2">📒 Administratif</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

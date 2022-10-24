@@ -1,0 +1,36 @@
+{
+  "name": "Pâtisserie Gülinaire",
+  "short_name": "Pâtisserie Gülinaire",
+  "theme_color": "aliceblue",
+  "start_url": "/",
+  "scope": "/",
+  "shortcuts": [
+    {
+      "name": "Mes clients",
+      "short_name": "Clients",
+      "description": "Liste de mes clients",
+      "url": "/client"
+    },
+    {
+      "name": "Mes commandes",
+      "short_name": "Commandes",
+      "description": "Liste des prochaines commandes",
+      "url": "/commande"
+    },
+    {
+      "name": "Prendre commande",
+      "short_name": "Commande+",
+      "description": "Créer une commande",
+      "url": "/commande/new"
+    }
+  ],
+  "lang": "fr",
+  "orientation": "landscape-primary",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "450x450"
+    }
+  ]
+}

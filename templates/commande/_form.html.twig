@@ -1,0 +1,39 @@
+{{ form_start(form) }}
+{{ form_errors(form) }}
+
+<div class="row">
+    <div class="col-5">
+        {{ form_row(form.client) }}
+    </div>
+    <div class="col-7">
+        {{ form_row(form.date_prise_commande) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-5">
+        {{ form_row(form.montant) }}
+    </div>
+    <div class="col-7">
+        {{ form_row(form.date_livraison_souhaitee) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        {{ form_row(form.mode_paiement) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        {{ form_row(form.commande) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        {{ form_row(form.livraison_domicile) }}
+    </div>
+    <div class="col-6">
+        {{ form_row(form.prete) }}
+    </div>
+</div>
+<button class="btn btn-info">{{ button_label|default('Sauvegarder') }}</button>
+{{ form_end(form) }}

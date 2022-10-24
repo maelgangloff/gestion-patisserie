@@ -1,0 +1,12 @@
+<form class="form-inline" method="post" action="{{ path('app_commande_livree', {'id': commande.id}) }}">
+    <input type="hidden" name="_token" value="{{ csrf_token('livree' ~ commande.id) }}">
+    <select name="mode_paiement" class="form-control form-select"
+            onchange="confirm(`Confirmez-vous le changement du moyen de paiement en ${this.value} ?`) ? this.form.submit() : location.reload()">
+        <option value="NP" {{ commande.modePaiement is null ?  'selected' : '' }}>Non payé</option>
+        <option value="ESP" {{ commande.modePaiement == 'ESP' ? 'selected' : '' }}>Espèces</option>
+        <option value="CB" {{ commande.modePaiement == 'CB' ? 'selected' : '' }}>Carte bancaire</option>
+        <option value="CHQ" {{ commande.modePaiement == 'CHQ' ? 'selected' : '' }}>Chèque</option>
+        <option value="ACC" {{ commande.modePaiement == 'ACC' ? 'selected' : '' }}>Accompte</option>
+	<option value="VIR" {{ commande.modePaiement == 'VIR' ? 'selected' : '' }}>Virement</option>
+    </select>
+</form>

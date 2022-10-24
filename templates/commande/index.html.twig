@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des commandes{% endblock %}
+
+{% block body %}
+    <div class="jumbotron">
+        <div class="btn-group float-right">
+            <a class="btn btn-primary" href="{{ path('app_commande_new') }}">Nouvelle commande</a>
+            <a class="btn btn-secondary" href="{{ path('admin') }}">Retour</a>
+        </div>
+        <h1 class="display-6">Liste des commandes du mois</h1>
+        <hr class="my-4">
+        <table class="table table-bordered" id="liste-commandes">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Date livraison</th>
+                <th>Montant</th>
+                <th>Commande</th>
+                <th>Statut</th>
+                <th>Client</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for commande in commandes|sort((a,b) => a.dateLivraisonSouhaitee > b.dateLivraisonSouhaitee)|filter(c => c.dateLivraison is null or c.modePaiement == 'ACC' or c.modePaiement == 'NP' or (c.dateLivraison|date('m') == 'now'|date('m') and c.dateLivraison|date('Y') == 'now'|date('Y'))) %}
+                <tr class="text-white {{ commande.dateLivraison is null ? commande.prete ? 'bg-info' : 'bg-danger' : 'bg-success' }}">
+                    <td>{{ commande.id }}</td>
+                    <td>{{ (commande.dateLivraison ?? commande.dateLivraisonSouhaitee)|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY HH:mm") }}</td>
+                    <td><b>{{ commande.montant|number_format(2) }}€</b></td>
+                    <td>
+                        {{ commande.commande|nl2br }}
+                        {% if commande.modePaiement == 'ACC' %}
+                            <br><span class="badge badge-success font-weight-bold">Le client a payé un acompte</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ commande.prete ? include('commande/_livree_form.html.twig') : include('commande/_prete_form.html.twig') }}</td>
+                    <td>{{ commande.client }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a class='btn btn-sm btn-dark'
+                               href="{{ path('app_commande_show', {'id': commande.id}) }}">Voir</a>
+                            <a class='btn btn-sm btn-secondary'
+                               href="{{ path('app_commande_edit', {'id': commande.id}) }}">Editer</a>
+                            <a class='btn btn-sm btn-warning'
+                               href="{{ path('app_commande_facture', {'id': commande.id}) }}"
+                               target="_blank">Facture</a>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="10">Aucune commande trouvée</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script type="application/javascript">
+        $('#liste-commandes').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json'
+            },
+            aaSorting: [],
+            pageLength: 50
+        })
+    </script>
+{% endblock %}
