@@ -39,7 +39,7 @@ class AdministratifController extends AbstractController
     {
         return $this->render('administratif.twig',
             [
-                'commandes' => $commandeRepository->findAll()
+                'commandes' => $commandeRepository->findBy([], ['date_livraison' => 'desc'])
             ]);
     }
 

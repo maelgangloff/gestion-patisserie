@@ -28,22 +28,22 @@
             </tr>
             </thead>
             <tbody>
-            {% for commande in commandes|filter(c => c.modePaiement is not null and c.modePaiement != 'ACC' and c.modePaiement != 'NP' and c.dateLivraison|date('Y') == 'now'|date('Y'))|sort((a,b) => a.dateLivraisonSouhaitee > b.dateLivraisonSouhaitee) %}
+            {% for commande in commandes|filter(c => c.modePaiement is not null and c.modePaiement != 'ACC' and c.modePaiement != 'NP' and c.dateLivraison|date('Y') == 'now'|date('Y')) %}
                 <tr>
                     <td>
                         <b>{{ societe_acronyme ~ commande.dateLivraisonSouhaitee|date('Ym') ~ '%05d'|format(commande.id) }}</b>
                     </td>
-                    <td>{{ commande.dateLivraison|format_datetime(locale='fr') }}</td>
-                    <td>{{ commande.client.nom }} {{ commande.client.prenom }}</td>
+                    <td>{{ commande.dateLivraison|date("Y-m-d H:i") }}</td>
+                    <td>{{ commande.client }}</td>
                     <td>
                         {% if commande.modePaiement == 'ESP' %}
-                            <span class="badge badge-warning">Espèces</span>
+                            <span class="badge badge-dark">ESPÈCE</span>
                         {% elseif commande.modePaiement == 'CB' %}
-                            <span class="badge badge-primary">Carte bancaire</span>
+                        <span class="badge badge-primary">CARTE BANCAIRE</span>
                         {% elseif commande.modePaiement == 'CHQ' %}
-                            <span class="badge badge-info">Chèque</span>
+                            <span class="badge badge-info">CHÈQUE</span>
 			{% elseif commande.modePaiement == 'VIR' %}
-			    <span class="badge badge-primary">Virement</span>
+			    <span class="badge badge-success">VIREMENT</span>
                         {% endif %}
                     </td>
                     <td><b>{{ commande.montant|number_format(2) }} €</b></td>
