@@ -114,6 +114,18 @@ class CommandeController extends AbstractController
         return $response;
     }
 
+    #[Route('/{id}/devis', name: 'app_commande_devis', methods: ['GET'])]
+    public function generateDevis(Commande $commande): Response
+    {
+        $reference = self::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
+        $invoice = self::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
+        $invoice->setType('Devis');
+        $response = new Response($invoice->render('DEVIS_' . $reference . '.pdf', 'S'));
+        $response->headers->set('Content-type', 'application/pdf');
+        $response->headers->set('Content-Disposition', $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_INLINE, 'DEVIS_' . $reference . '.pdf'));
+        return $response;
+    }
+
     public static function makeInvoiceReference(string $societe_acronyme, Commande $commande): string
     {
         return $societe_acronyme . $commande->getDateLivraisonSouhaitee()->format('Ym') . sprintf("%05d", $commande->getId());
@@ -122,6 +134,7 @@ class CommandeController extends AbstractController
     public static function makeInvoice(array $fromAddress, string $siret, string $reference, Commande $commande): InvoicePrinter
     {
         $invoice = new InvoicePrinter('A4', '€', 'fr');
+        $invoice->setFontSizeProductDescription(10);
         $invoice->setNumberFormat('.', ' ', 'right', true, false);
         $invoice->changeLanguageTerm('price', 'Prix');
         $invoice->changeLanguageTerm('product', 'Désignation');
@@ -129,13 +142,13 @@ class CommandeController extends AbstractController
         $invoice->setColor("#00000");
         $invoice->setType("Facture");
         $invoice->setReference($reference);
-        $invoice->setDate($commande->getDateLivraisonSouhaitee()->format('d/m/Y'));
+        $invoice->setDate(($commande->getDateLivraison() ?? $commande->getDateLivraisonSouhaitee())->format('d/m/Y'));
         $invoice->setFrom($fromAddress);
         $invoice->setTo([$commande->getClient()->__toString()]);
         $invoice->addItem("Commande", $commande->getCommande(), false, false, $commande->getMontant(), false, $commande->getMontant());
         $modePaiement = $commande->getModePaiement();
         $invoice->addTotal("Total TTC", $commande->getMontant(), true);
-	$invoice->addParagraph('TVA non applicable, article 293B du code général des impôts.');
+        $invoice->addParagraph('TVA non applicable, article 293B du code général des impôts.');
         if ($modePaiement !== 'NP' && $modePaiement !== null && $modePaiement !== 'ACC') {
             $invoice->addTitle('Règlement:');
             $invoice->addParagraph('Date de règlement: ' . $commande->getDateLivraison()->format('d/m/Y'));
