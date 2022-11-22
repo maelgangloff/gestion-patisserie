@@ -37,7 +37,7 @@
                     <td>{{ commande.client }}</td>
                     <td>
                         {% if commande.modePaiement == 'ESP' %}
-                            <span class="badge badge-dark">ESPÈCE</span>
+                            <span class="badge badge-dark">ESPÈCES</span>
                         {% elseif commande.modePaiement == 'CB' %}
                         <span class="badge badge-primary">CARTE BANCAIRE</span>
                         {% elseif commande.modePaiement == 'CHQ' %}
