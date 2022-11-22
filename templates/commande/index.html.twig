@@ -42,17 +42,22 @@
                                href="{{ path('app_commande_show', {'id': commande.id}) }}">Voir</a>
                             <a class='btn btn-sm btn-secondary'
                                href="{{ path('app_commande_edit', {'id': commande.id}) }}">Editer</a>
-                            <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown"
-                                    aria-haspopup="true" aria-expanded="false">
-                                Docs
-                            </button>
-                            <div class="dropdown-menu">
-                                {% if commande.dateLivraison is null %}
+                            {% if commande.dateLivraison is null %}
+                                <button type="button" class="btn btn-sm btn-warning dropdown-toggle"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                    Docs
+                                </button>
+                                <div class="dropdown-menu">
                                     <a class="dropdown-item"
                                        href="{{ path('app_commande_devis', {'id': commande.id}) }}">Devis</a>
-                                {% endif %}
-                                <a class="dropdown-item" href="{{ path('app_commande_facture', {'id': commande.id}) }}">Facture</a>
-                            </div>
+                                    <a class="dropdown-item"
+                                       href="{{ path('app_commande_facture', {'id': commande.id}) }}">Facture</a>
+                                </div>
+                            {% else %}
+                                <a class="btn btn-sm btn-warning"
+                                   href="{{ path('app_commande_facture', {'id': commande.id}) }}">Facture</a>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>
