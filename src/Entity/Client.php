@@ -51,19 +51,19 @@ class Client
 
     public function setNom(string $nom): self
     {
-        $this->nom = strtoupper($nom);
+        $this->nom = mb_strtoupper($nom);
 
         return $this;
     }
 
     public function getPrenom(): ?string
     {
-        return $this->prenom;
+        return mb_strtoupper($this->prenom);
     }
 
     public function setPrenom(string $prenom): self
     {
-        $this->prenom = ucfirst(strtolower($prenom));
+        $this->prenom = mb_strtoupper($prenom);
 
         return $this;
     }
@@ -136,6 +136,6 @@ class Client
 
     public function __toString(): string
     {
-        return $this->prenom . ' ' . $this->nom;
+        return mb_strtoupper($this->prenom . ' ' . $this->nom);
     }
 }
