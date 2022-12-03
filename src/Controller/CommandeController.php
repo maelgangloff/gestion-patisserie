@@ -116,7 +116,7 @@ class CommandeController extends AbstractController
     {
         $token = $commande->getDocToken();
         if (!$this->isGranted('ROLE_ADMIN')) {
-            if ($token == '' || $request->query->get('ticket') != $token) return new Response("Accès refusé: adresse invalide");
+            if ($token == '' || $commande->getDateLivraison() == null || $request->query->get('ticket') != $token) return new Response("Accès refusé: adresse invalide");
         }
         $reference = self::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
         $invoice = self::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
