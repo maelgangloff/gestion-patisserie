@@ -50,13 +50,13 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item"
-                                       href="{{ path('app_commande_devis', {'id': commande.id}) }}">✏️ Devis</a>
+                                       href="{{ path('app_commande_document', {'id': commande.id, 'document': 'devis'}) }}">✏️ Devis</a>
                                     <a class="dropdown-item"
-                                       href="{{ path('app_commande_facture', {'id': commande.id}) }}">📜 Facture</a>
+                                       href="{{ path('app_commande_document', {'id': commande.id, 'document': 'facture'}) }}">📜 Facture</a>
                                 </div>
                             {% else %}
                                 <a class="btn btn-sm btn-warning"
-                                   href="{{ path('app_commande_facture', {'id': commande.id}) }}">Facture</a>
+                                   href="{{ path('app_commande_document', {'id': commande.id, 'document': 'facture'}) }}">Facture</a>
                             {% endif %}
                         </div>
                     </td>

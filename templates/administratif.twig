@@ -39,15 +39,16 @@
                         {% if commande.modePaiement == 'ESP' %}
                             <span class="badge badge-dark">ESPÈCES</span>
                         {% elseif commande.modePaiement == 'CB' %}
-                        <span class="badge badge-primary">CARTE BANCAIRE</span>
+                            <span class="badge badge-primary">CARTE BANCAIRE</span>
                         {% elseif commande.modePaiement == 'CHQ' %}
                             <span class="badge badge-info">CHÈQUE</span>
-			{% elseif commande.modePaiement == 'VIR' %}
-			    <span class="badge badge-success">VIREMENT</span>
+                        {% elseif commande.modePaiement == 'VIR' %}
+                            <span class="badge badge-success">VIREMENT</span>
                         {% endif %}
                     </td>
                     <td><b>{{ commande.montant|number_format(2) }} €</b></td>
-                    <td><a class='btn btn-info btn-sm' href="{{ path('app_commande_facture', {'id': commande.id}) }}"
+                    <td><a class='btn btn-info btn-sm'
+                           href="{{ path('app_commande_document', {'id': commande.id, 'document': 'facture'}) }}"
                            target="_blank">Facture</a>
                     </td>
                 </tr>

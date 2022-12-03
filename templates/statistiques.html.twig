@@ -27,7 +27,9 @@
         <tbody>
         {% for commande in commandes|filter(c => c.modePaiement is not null and c.modePaiement != 'ACC' and c.modePaiement != 'NP') %}
             <tr>
-                <td><b>{{ societe_acronyme ~ commande.dateLivraisonSouhaitee|date('Ym') ~ '%05d'|format(commande.id) }}</b></td>
+                <td>
+                    <b>{{ societe_acronyme ~ commande.dateLivraisonSouhaitee|date('Ym') ~ '%05d'|format(commande.id) }}</b>
+                </td>
                 <td>{{ commande.dateLivraison|format_datetime(locale='fr') }}</td>
                 <td>{{ commande.client.nom }} {{ commande.client.prenom }}</td>
                 <td>
@@ -42,7 +44,8 @@
                     {% endif %}
                 </td>
                 <td><b>{{ commande.montant|number_format(2) }} €</b></td>
-                <td><a class='btn btn-primary btn-sm' href="{{ path('app_commande_facture', {'id': commande.id}) }}">Facture</a>
+                <td><a class='btn btn-primary btn-sm'
+                       href="{{ path('app_commande_document', {'id': commande.id, 'document': 'facture'}) }}">Facture</a>
                 </td>
             </tr>
         {% endfor %}

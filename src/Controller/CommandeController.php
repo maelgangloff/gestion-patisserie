@@ -111,40 +111,23 @@ class CommandeController extends AbstractController
         return $this->redirectToRoute('app_commande_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/facture', name: 'app_commande_facture', methods: ['GET'])]
-    public function generateInvoice(Commande $commande, Request $request): Response
+    #[Route('/{id}/{document}', name: 'app_commande_document', requirements: ['document' => 'facture|devis'], methods: ['GET'])]
+    public function generateDocument(Commande $commande, Request $request, string $document): Response
     {
         $token = $commande->getDocToken();
         if (!$this->isGranted('ROLE_ADMIN')) {
-            if ($token == '' || $commande->getDateLivraison() == null || $request->query->get('ticket') != $token) return new Response("Accès refusé: adresse invalide");
+            if ($token == '' || $request->query->get('ticket') != $token || ($document == 'facture' && $commande->getDateLivraison() == null)) return new Response("Accès refusé");
         }
         $reference = self::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
         $invoice = self::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
-        if ($docToken = $commande->getDocToken()) $invoice->addParagraph('Retrouvez cette facture en ligne: https:' . $this->generateUrl(
-                'app_commande_facture', ['id' => $commande->getId(), 'ticket' => $docToken], UrlGeneratorInterface::NETWORK_PATH
+        if ($document == 'devis') $invoice->setType('Devis');
+        if ($docToken = $commande->getDocToken()) $invoice->addParagraph('Document disponible sur: https:' . $this->generateUrl(
+                'app_commande_document', ['id' => $commande->getId(), 'ticket' => $docToken, 'document' => $document], UrlGeneratorInterface::NETWORK_PATH
             ));
-        $response = new Response($invoice->render('FACTURE_' . $reference . '.pdf', 'S'));
+        $fileName = strtoupper($document) . '_' . $reference . '.pdf';
+        $response = new Response($invoice->render($fileName, 'S'));
         $response->headers->set('Content-type', 'application/pdf');
-        $response->headers->set('Content-Disposition', $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_INLINE, 'FACTURE_' . $reference . '.pdf'));
-        return $response;
-    }
-
-    #[Route('/{id}/devis', name: 'app_commande_devis', methods: ['GET'])]
-    public function generateDevis(Commande $commande, Request $request): Response
-    {
-        $token = $commande->getDocToken();
-        if (!$this->isGranted('ROLE_ADMIN')) {
-            if ($token == '' || $request->query->get('ticket') != $token) return new Response("Accès refusé: adresse invalide");
-        }
-        $reference = self::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
-        $invoice = self::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
-        $invoice->setType('Devis');
-        if ($docToken = $commande->getDocToken()) $invoice->addParagraph('Retrouvez ce devis en ligne: https:' . $this->generateUrl(
-                'app_commande_devis', ['id' => $commande->getId(), 'ticket' => $docToken], UrlGeneratorInterface::NETWORK_PATH
-            ));
-        $response = new Response($invoice->render('DEVIS_' . $reference . '.pdf', 'S'));
-        $response->headers->set('Content-type', 'application/pdf');
-        $response->headers->set('Content-Disposition', $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_INLINE, 'DEVIS_' . $reference . '.pdf'));
+        $response->headers->set('Content-Disposition', $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $fileName));
         return $response;
     }
 
