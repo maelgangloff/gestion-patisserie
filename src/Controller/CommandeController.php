@@ -121,9 +121,12 @@ class CommandeController extends AbstractController
         $reference = self::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
         $invoice = self::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
         if ($document == 'devis') $invoice->setType('Devis');
-        if ($docToken = $commande->getDocToken()) $invoice->addParagraph('Document disponible sur: https:' . $this->generateUrl(
-                'app_commande_document', ['id' => $commande->getId(), 'ticket' => $docToken, 'document' => $document], UrlGeneratorInterface::NETWORK_PATH
-            ));
+        if ($docToken = $commande->getDocToken()) {
+            $invoice->addTitle("Nota Bene:");
+            $invoice->addParagraph('Document disponible sur: https:' . $this->generateUrl(
+                    'app_commande_document', ['id' => $commande->getId(), 'ticket' => $docToken, 'document' => $document], UrlGeneratorInterface::NETWORK_PATH
+                ));
+        }
         $fileName = strtoupper($document) . '_' . $reference . '.pdf';
         $response = new Response($invoice->render($fileName, 'S'));
         $response->headers->set('Content-type', 'application/pdf');
@@ -158,8 +161,6 @@ class CommandeController extends AbstractController
             $invoice->addTitle('Règlement:');
             $invoice->addParagraph('Date de règlement: ' . $commande->getDateLivraison()->format('d/m/Y'));
             $invoice->addParagraph('Mode de règlement: ' . ($modePaiement === 'CB' ? 'Carte bancaire' : ($modePaiement === 'ESP' ? 'Espèces' : ($modePaiement === 'VIR' ? 'Virement' : 'Chèque'))));
-            $invoice->addParagraph("");
-            $invoice->addParagraph("");
         }
         $invoice->setFooternote(strtoupper(Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC')->transliterate($fromAddress[0])) . ' - SIRET ' . $siret);
         return $invoice;
