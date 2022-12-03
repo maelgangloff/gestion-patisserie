@@ -43,6 +43,9 @@ class Commande
     #[ORM\JoinColumn(nullable: false)]
     private ?Client $client;
 
+    #[ORM\Column(length: 50)]
+    private ?string $doc_token = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -152,6 +155,18 @@ class Commande
     public function setClient(?client $client): self
     {
         $this->client = $client;
+
+        return $this;
+    }
+
+    public function getDocToken(): ?string
+    {
+        return $this->doc_token;
+    }
+
+    public function setDocToken(string $doc_token): self
+    {
+        $this->doc_token = $doc_token;
 
         return $this;
     }
