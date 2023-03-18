@@ -99,9 +99,9 @@ class AdministratifController extends AbstractController
         });
 
         $commandesSheet->fromArray([
-            ['Date livraison souhaitée', 'Date prise commande', 'Date livraison', 'Client', 'Montant', 'Mode de paiement'],
+            ['Référence', 'Date prise commande', 'Date livraison', 'Client', 'Montant', 'Mode de paiement'],
             ...array_map(function (Commande $commande) {
-                return [$commande->getDateLivraisonSouhaitee(), $commande->getDatePriseCommande(), $commande->getDateLivraison(), $commande->getClient(), $commande->getMontant(), $commande->getModePaiement()];
+                return [CommandeController::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande), $commande->getDatePriseCommande(), $commande->getDateLivraison() ?? $commande->getDateLivraisonSouhaitee(), $commande->getClient(), $commande->getMontant(), $commande->getModePaiement()];
             }, $commandes)
         ]);
 
