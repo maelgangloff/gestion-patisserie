@@ -81,9 +81,13 @@ class AdministratifController extends AbstractController
         $commandes = $commandeRepository->findAll();
         $clientsSheet->getStyle('C:D')->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_TEXT);
         $clientsSheet->fromArray([
-            ['Nom', 'Prénom', 'Identifiant Messenger', 'Téléphone', 'Nombre de commandes'],
+            ['Nom', 'Prénom', 'Identifiant Messenger', 'Téléphone', 'Nombre de commandes', 'Panier moyen'],
             ...array_map(function (array $client) {
-                return [$client['nom'], $client['prenom'], $client['pseudo_facebook'], $client['telephone'], count($client['commandes'])];
+                $nb_commandes = count($client['commandes']);
+                $panier_moyen = array_reduce($client['commandes'], function ($carry, $commande) {
+                    return $carry + $commande['montant'];
+                }, 0) / ($nb_commandes == 0 ? 1 : $nb_commandes);
+                return [$client['nom'], $client['prenom'], $client['pseudo_facebook'], $client['telephone'], $nb_commandes, $panier_moyen];
             }, $clients)
         ]);
 
