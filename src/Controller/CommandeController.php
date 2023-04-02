@@ -120,12 +120,15 @@ class CommandeController extends AbstractController
         }
         $reference = self::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
         $invoice = self::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
-        if ($document == 'devis') $invoice->setType('Devis');
         if ($docToken = $commande->getDocToken()) {
             $invoice->addTitle("Nota Bene:");
             $invoice->addParagraph('Document disponible sur: https:' . $this->generateUrl(
                     'app_commande_document', ['id' => $commande->getId(), 'ticket' => $docToken, 'document' => $document], UrlGeneratorInterface::NETWORK_PATH
                 ));
+        }
+        if ($document == 'devis') {
+            $invoice->setType('Devis');
+            $invoice->addParagraph('Le présent devis est valable pour une durée de 15 jours ouvrés.');
         }
         $fileName = strtoupper($document) . '_' . $reference . '.pdf';
         $response = new Response($invoice->render($fileName, 'S'));

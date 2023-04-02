@@ -27,7 +27,9 @@
             Les entrées actuelles du mois en cours sont de
             <b>{{ chiffreAffaireMois|number_format(2, '.', ' ') }} €</b> sur <b>{{ chiffreAffairePrevisionnelMois|number_format(2, '.', ' ') }} €</b> en prévision.<br>
             Le chiffre d'affaires prévisionnel du mois prochain est de
-            <b>{{ chiffreAffaireMoisPrevisionnelProchain|number_format(2, '.', ' ') }} €.</b>
+            <b>{{ chiffreAffaireMoisPrevisionnelProchain|number_format(2, '.', ' ') }} €.</b><br>
+            Le chiffre d'affaires cumulé de l'année courante est de 
+            <b>{{ chiffreAffaireCumule|number_format(2, '.', ' ') }} €</b> sur <b>{{ chiffreAffairePrevisionnelCumule|number_format(2, '.', ' ') }} € </b> en prévision. ({{ (chiffreAffairePrevisionnelCumule-chiffreAffaireCumule)|number_format(2, '.', ' ') }} € de prochaines commandes)
         </div>
         <div class="row">
             <div class="col-4">
