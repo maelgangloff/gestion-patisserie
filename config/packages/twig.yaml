@@ -2,10 +2,10 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     form_themes: ['bootstrap_5_layout.html.twig']
     globals:
-        societe: '%societe%'
-        address: '%address%'
-        siret: '%siret%'
-        societe_acronyme: '%societe_acronyme%'
+        societe: '%env(SOCIETE)%'
+        address: '%env(SOCIETE_ADDRESS1)%\n%env(SOCIETE_ADDRESS2)%'
+        siret: '%env(SOCIETE_SIRET)%'
+        societe_acronyme: '%env(SOCIETE_ACRONYME)%'
 
 when@test:
     twig:

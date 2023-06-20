@@ -4,11 +4,10 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    societe: Pâtisserie P
-    societe_acronyme: PP
-    address: Pâtisserie P\n1 RUE DU MACARON\n54000, NANCY
-    siret: 123 456 789 00000
-
+    societe: '%env(SOCIETE)%'
+    address: '%env(SOCIETE_ADDRESS1)%\n%env(SOCIETE_ADDRESS2)%'
+    siret: '%env(SOCIETE_SIRET)%'
+    societe_acronyme: '%env(SOCIETE_ACRONYME)%'
 services:
     # default configuration for services in *this* file
     _defaults:
