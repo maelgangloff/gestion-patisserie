@@ -23,7 +23,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for commande in commandes|sort((a,b) => a.dateLivraisonSouhaitee > b.dateLivraisonSouhaitee)|filter(c => c.dateLivraison is null or c.modePaiement == 'ACC' or c.modePaiement == 'NP' or (c.dateLivraison|date('m') == 'now'|date('m') and c.dateLivraison|date('Y') == 'now'|date('Y'))) %}
+            {% for commande in commandes|sort((a,b) => a.dateLivraisonSouhaitee > b.dateLivraisonSouhaitee)|filter(c => c.dateLivraison is null or c.modePaiement == 'ACC' or c.modePaiement == 'NP' or (c.dateLivraisonSouhaitee|date('m') == 'now'|date('m') and c.dateLivraisonSouhaitee|date('Y') == 'now'|date('Y'))) %}
                 <tr class="text-white {{ commande.dateLivraison is null ? commande.prete ? 'bg-info' : 'bg-danger' : 'bg-success' }}">
                     <td>{{ commande.id }}</td>
                     <td>{{ (commande.dateLivraison ?? commande.dateLivraisonSouhaitee)|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY HH:mm") }}</td>
