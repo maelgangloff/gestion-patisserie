@@ -8,7 +8,7 @@
         <div class="lead">Bienvenue sur le portail de gestion des commandes de votre entreprise.</div>
         <hr class="my-4">
         <div class="alert alert-info">
-            {% set commandesMoisEtNonLivrees = commandes|filter(c => c.dateLivraison is null or c.modePaiement == 'ACC' or c.modePaiement == 'NP' or (c.dateLivraison|date('m') == 'now'|date('m') and c.dateLivraison|date('Y') == 'now'|date('Y'))) %}
+            {% set commandesMoisEtNonLivrees = commandes|filter(c => c.dateLivraison is null or c.modePaiement == 'ACC' or c.modePaiement == 'NP' or (c.dateLivraisonSouhaitee|date('m') == 'now'|date('m') and c.dateLivraisonSouhaitee|date('Y') == 'now'|date('Y'))) %}
             {% if commandesMoisEtNonLivrees is not empty %}
             <div class="progress" style="height: 30px">
                 <div class="progress-bar bg-success" role="progressbar" style="width: {{ (commandesMoisEtNonLivrees|filter(c => c.prete == 1)|length/commandesMoisEtNonLivrees|length)*100 }}%"><h5>{{ commandesMoisEtNonLivrees|filter(c => c.prete == 1)|length }} prêtes</h5></div>
