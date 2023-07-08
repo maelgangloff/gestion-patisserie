@@ -9,10 +9,10 @@
 </head>
 <body>
 <p>
-    Bonjour, <br>
-    Nous vous remercions pour votre commande passée le <b>{{ commande.datePriseCommande|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY HH:mm") }}</b>, payée le <b>{{ commande.dateLivraison|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY HH:mm") }}</b> d'un montant de <b>{{ commande.montant|number_format(2) }}</b> € chez <b>{{ societe }}</b>.<br>
+    Bonjour, <br><br>
+    Nous vous remercions pour votre commande passée le <b>{{ commande.datePriseCommande|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY") }}</b>, payée le <b>{{ commande.dateLivraison|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY HH:mm") }}</b> d'un montant de <b>{{ commande.montant|number_format(2) }} €</b>.<br>
     Vous trouverez en pièce jointe la facture associée.<br>
-    <br>
+    <br><br>
     Bien cordialement <br>
     {{ societe }}
 </p>
