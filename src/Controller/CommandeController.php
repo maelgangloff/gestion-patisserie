@@ -101,8 +101,9 @@ class CommandeController extends AbstractController
     public function livree(Request $request, Commande $commande, ManagerRegistry $doctrine, MailerInterface $mailer, BodyRendererInterface $bodyRenderer): Response
     {
         if ($this->isCsrfTokenValid('livree' . $commande->getId(), $request->request->get('_token'))) {
-            $commande->setModePaiement($request->request->get('mode_paiement'));
-            if ($commande->getModePaiement() != 'ACC' && $commande->getDateLivraison() == null){
+            $modePaiement = $request->request->get('mode_paiement');
+            $commande->setModePaiement($modePaiement);
+            if ($modePaiement !== 'NP' && $modePaiement != 'ACC' && $commande->getDateLivraison() == null){
                 $commande->setDateLivraison(new DateTime('now', new DateTimeZone('Europe/Paris')));
                 $mail = $commande->getClient()->getEmail();
                 if($mail !== null) {
