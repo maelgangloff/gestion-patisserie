@@ -121,6 +121,7 @@ class CommandeController extends AbstractController
                     $mailer->send($email);
                 }
             }
+            if($modePaiement == 'NP') $commande->setDateLivraison(null);
             $doctrine->getManager()->flush();
         }
         return $this->redirectToRoute('app_commande_index', [], Response::HTTP_SEE_OTHER);
