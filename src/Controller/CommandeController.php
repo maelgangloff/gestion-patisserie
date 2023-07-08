@@ -110,7 +110,7 @@ class CommandeController extends AbstractController
                     $invoice = CommandeController::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
                     $email = (new TemplatedEmail())
                         ->to(new Address($mail))
-                        ->subject($this->getParameter('societe'))
+                        ->subject('Commande ' . $reference . ' chez ' . $this->getParameter('societe'))
                         ->htmlTemplate('emails/invoice.html.twig')
                         ->context([
                             'commande' => $commande
