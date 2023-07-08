@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+</head>
+<body>
+<p>
+    Bonjour,
+    Nous vous remercions pour votre commande passée le <b>{{ commande.datePriseCommande|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY HH:mm") }}</b>, payée le <b>{{ commande.dateLivraison|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY HH:mm") }}</b> d'un montant de <b>{{ commande.montant|number_format(2) }}</b> € chez <b>{{ societe }}</b>.<br>
+    Vous trouverez en pièce jointe la facture associée.
+
+    Bien cordialement
+    {{ societe }}
+</p>
+</body>
+</html>

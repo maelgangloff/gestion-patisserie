@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Client;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -21,6 +22,9 @@ class ClientType extends AbstractType
                 'required' => true
             ])
             ->add('telephone', TelType::class, [
+                'required' => false
+            ])
+            ->add('email', EmailType::class, [
                 'required' => false
             ])
             ->add('pseudo_facebook', null, [

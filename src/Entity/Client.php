@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
@@ -33,6 +34,9 @@ class Client
 
     #[ORM\OneToMany(mappedBy: 'client', targetEntity: Commande::class)]
     private $commandes;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $email = null;
 
     public function __construct()
     {
@@ -137,5 +141,17 @@ class Client
     public function __toString(): string
     {
         return mb_strtoupper($this->prenom . ' ' . $this->nom);
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
     }
 }

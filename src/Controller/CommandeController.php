@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Client;
 use App\Entity\Commande;
 use App\Form\CommandeType;
 use App\Repository\CommandeRepository;
@@ -11,10 +12,15 @@ use Doctrine\Persistence\ManagerRegistry;
 use Konekt\PdfInvoice\InvoicePrinter;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\BodyRendererInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Transliterator;
@@ -88,14 +94,33 @@ class CommandeController extends AbstractController
         return $this->redirectToRoute('app_commande_index', [], Response::HTTP_SEE_OTHER);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     #[Route('/{id}/livree', name: 'app_commande_livree', methods: ['POST'])]
     #[IsGranted("ROLE_ADMIN")]
-    public function livree(Request $request, Commande $commande, ManagerRegistry $doctrine): Response
+    public function livree(Request $request, Commande $commande, ManagerRegistry $doctrine, MailerInterface $mailer, BodyRendererInterface $bodyRenderer): Response
     {
         if ($this->isCsrfTokenValid('livree' . $commande->getId(), $request->request->get('_token'))) {
             $commande->setModePaiement($request->request->get('mode_paiement'));
             if ($commande->getModePaiement() != 'ACC' && $commande->getDateLivraison() == null) $commande->setDateLivraison(new DateTime('now', new DateTimeZone('Europe/Paris')));
             $doctrine->getManager()->flush();
+
+            $mail = $commande->getClient()->getEmail();
+            if($mail !== null) {
+                $reference = CommandeController::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
+                $invoice = CommandeController::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
+                $email = (new TemplatedEmail())
+                    ->to(new Address($mail))
+                    ->subject($this->getParameter('societe'))
+                    ->htmlTemplate('emails/invoice.twig')
+                    ->context([
+                        'commande' => $commande
+                    ])
+                    ->attach($invoice->render($reference, 'S'), 'FACTURE_' . $reference . '.pdf', 'application/pdf');
+                $bodyRenderer->render($email);
+                $mailer->send($email);
+            }
         }
         return $this->redirectToRoute('app_commande_index', [], Response::HTTP_SEE_OTHER);
     }
