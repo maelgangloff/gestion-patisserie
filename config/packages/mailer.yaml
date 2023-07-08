@@ -1,6 +1,7 @@
 framework:
     mailer:
         dsn: '%env(MAILER_DSN)%'
+        message_bus: app.another_bus
         envelope:
             sender: '%env(MAIL_FROM)%'
         headers:
