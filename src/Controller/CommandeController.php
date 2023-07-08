@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Client;
 use App\Entity\Commande;
 use App\Form\CommandeType;
 use App\Repository\CommandeRepository;
@@ -103,24 +102,25 @@ class CommandeController extends AbstractController
     {
         if ($this->isCsrfTokenValid('livree' . $commande->getId(), $request->request->get('_token'))) {
             $commande->setModePaiement($request->request->get('mode_paiement'));
-            if ($commande->getModePaiement() != 'ACC' && $commande->getDateLivraison() == null) $commande->setDateLivraison(new DateTime('now', new DateTimeZone('Europe/Paris')));
-            $doctrine->getManager()->flush();
-
-            $mail = $commande->getClient()->getEmail();
-            if($mail !== null) {
-                $reference = CommandeController::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
-                $invoice = CommandeController::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
-                $email = (new TemplatedEmail())
-                    ->to(new Address($mail))
-                    ->subject($this->getParameter('societe'))
-                    ->htmlTemplate('emails/invoice.twig')
-                    ->context([
-                        'commande' => $commande
-                    ])
-                    ->attach($invoice->render($reference, 'S'), 'FACTURE_' . $reference . '.pdf', 'application/pdf');
-                $bodyRenderer->render($email);
-                $mailer->send($email);
+            if ($commande->getModePaiement() != 'ACC' && $commande->getDateLivraison() == null){
+                $commande->setDateLivraison(new DateTime('now', new DateTimeZone('Europe/Paris')));
+                $mail = $commande->getClient()->getEmail();
+                if($mail !== null) {
+                    $reference = CommandeController::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
+                    $invoice = CommandeController::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
+                    $email = (new TemplatedEmail())
+                        ->to(new Address($mail))
+                        ->subject($this->getParameter('societe'))
+                        ->htmlTemplate('emails/invoice.twig')
+                        ->context([
+                            'commande' => $commande
+                        ])
+                        ->attach($invoice->render($reference, 'S'), 'FACTURE_' . $reference . '.pdf', 'application/pdf');
+                    $bodyRenderer->render($email);
+                    $mailer->send($email);
+                }
             }
+            $doctrine->getManager()->flush();
         }
         return $this->redirectToRoute('app_commande_index', [], Response::HTTP_SEE_OTHER);
     }
