@@ -143,7 +143,7 @@ class CommandeController extends AbstractController
     {
         $token = $commande->getDocToken();
         if (!$this->isGranted('ROLE_ADMIN')) {
-            if ($token == '' || $request->query->get('ticket') != $token || ($document == 'facture' && $commande->getDateLivraison() == null)) return new Response("Accès refusé");
+            if ($token == '' || $request->query->get('ticket') != $token || ($document == 'facture' && $commande->getDateLivraison() == null)) return new Response("Accès refusé", Response::HTTP_UNAUTHORIZED);
         }
         $reference = self::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
         $invoice = self::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
