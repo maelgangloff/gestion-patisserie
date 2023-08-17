@@ -29,12 +29,17 @@
                         <div class="btn-group">
                             {% if client.pseudoFacebook is not empty %}
                                 <a href="https://m.me/{{ client.pseudoFacebook }}" target="_blank">
-                                    <button class="btn btn-primary m-1">Messenger</button>
+                                    <button class="btn btn-secondary m-1">Messenger</button>
                                 </a>
                             {% endif %}
                             {% if client.telephone is not empty %}
                                 <a href="sms:{{ client.telephone }}">
                                     <button class="btn btn-secondary m-1">SMS</button>
+                                </a>
+                            {% endif %}
+                            {% if client.email is not empty %}
+                                <a href="mailto:{{ client.email }}">
+                                    <button class="btn btn-secondary m-1">Courriel</button>
                                 </a>
                             {% endif %}
                         </div>
