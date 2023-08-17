@@ -191,7 +191,7 @@ class CommandeController extends AbstractController
         $modePaiement = $commande->getModePaiement();
         $invoice->addTotal("Total TTC", $commande->getMontant(), true);
         $invoice->addParagraph('TVA non applicable, article 293B du code général des impôts.');
-        if ($modePaiement !== 'NP' && $modePaiement !== null && $modePaiement !== 'ACC') {
+        if ($modePaiement !== 'NP' && $modePaiement !== null && $modePaiement !== 'ACC' && $commande->getDateLivraison() !== null) {
             $invoice->addTitle('Règlement:');
             $invoice->addParagraph('Date de règlement: ' . $commande->getDateLivraison()->format('d/m/Y'));
             $invoice->addParagraph('Mode de règlement: ' . ($modePaiement === 'CB' ? 'Carte bancaire' : ($modePaiement === 'ESP' ? 'Espèces' : ($modePaiement === 'VIR' ? 'Virement' : 'Chèque'))));
