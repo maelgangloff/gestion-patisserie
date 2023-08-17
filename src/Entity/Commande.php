@@ -130,7 +130,7 @@ class Commande
 
     public function setModePaiement(?string $mode_paiement): self
     {
-        $this->mode_paiement = $mode_paiement;
+        $this->mode_paiement = $mode_paiement === 'NP' ? null : $mode_paiement;
 
         return $this;
     }

@@ -103,10 +103,10 @@ class CommandeController extends AbstractController
         if ($this->isCsrfTokenValid('livree' . $commande->getId(), $request->request->get('_token'))) {
             $modePaiement = $request->request->get('mode_paiement');
             $commande->setModePaiement($modePaiement);
-            if ($modePaiement !== 'NP' && $modePaiement != 'ACC' && $commande->getDateLivraison() == null){
+            if ($modePaiement !== 'NP' && $modePaiement != 'ACC' && $commande->getDateLivraison() == null) {
                 $commande->setDateLivraison(new DateTime('now', new DateTimeZone('Europe/Paris')));
                 $mail = $commande->getClient()->getEmail();
-                if($mail !== null) {
+                if ($mail !== null) {
                     $reference = CommandeController::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
                     $invoice = CommandeController::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
                     $email = (new TemplatedEmail())
@@ -121,7 +121,7 @@ class CommandeController extends AbstractController
                     $mailer->send($email);
                 }
             }
-            if($modePaiement == 'NP') $commande->setDateLivraison(null);
+            if ($modePaiement == 'NP') $commande->setDateLivraison(null);
             $doctrine->getManager()->flush();
         }
         return $this->redirectToRoute('app_commande_index', [], Response::HTTP_SEE_OTHER);
@@ -155,7 +155,10 @@ class CommandeController extends AbstractController
         }
         if ($document == 'devis') {
             $invoice->setType('Devis');
-            $invoice->addParagraph('Le présent devis est valable pour une durée de 15 jours ouvrés.');
+            $invoice->addParagraph("Devis gratuit et valable pour une durée de 15 jours ouvrés à partir de la date d'émission.");
+            $invoice->addParagraph("Document à retourner daté et signé, précédé de la mention « Bon pour accord ».");
+        } else {
+            $invoice->addParagraph("Conditions de règlement : Paiement à la livraison.");
         }
         $fileName = strtoupper($document) . '_' . $reference . '.pdf';
         $response = new Response($invoice->render($fileName, 'S'));
@@ -171,6 +174,7 @@ class CommandeController extends AbstractController
 
     public static function makeInvoice(array $fromAddress, string $siret, string $reference, Commande $commande): InvoicePrinter
     {
+        $client = $commande->getClient();
         $invoice = new InvoicePrinter('A4', '€', 'fr');
         $invoice->setFontSizeProductDescription(10);
         $invoice->setNumberFormat('.', ' ', 'right', true, false);
@@ -182,7 +186,7 @@ class CommandeController extends AbstractController
         $invoice->setReference($reference);
         $invoice->setDate(($commande->getDateLivraison() ?? $commande->getDateLivraisonSouhaitee())->format('d/m/Y'));
         $invoice->setFrom($fromAddress);
-        $invoice->setTo([$commande->getClient()->__toString()]);
+        $invoice->setTo([$client->__toString(), $client->getEmail()]);
         $invoice->addItem("Commande", $commande->getCommande(), false, false, $commande->getMontant(), false, $commande->getMontant());
         $modePaiement = $commande->getModePaiement();
         $invoice->addTotal("Total TTC", $commande->getMontant(), true);
@@ -192,7 +196,7 @@ class CommandeController extends AbstractController
             $invoice->addParagraph('Date de règlement: ' . $commande->getDateLivraison()->format('d/m/Y'));
             $invoice->addParagraph('Mode de règlement: ' . ($modePaiement === 'CB' ? 'Carte bancaire' : ($modePaiement === 'ESP' ? 'Espèces' : ($modePaiement === 'VIR' ? 'Virement' : 'Chèque'))));
         }
-        $invoice->setFooternote(strtoupper(Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC')->transliterate($fromAddress[0])) . ' - SIRET ' . $siret);
+        $invoice->setFooternote(strtoupper(Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC')->transliterate($fromAddress[0])) . ' - ' . $siret);
         return $invoice;
     }
 }

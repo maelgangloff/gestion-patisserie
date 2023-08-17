@@ -6,7 +6,7 @@
 parameters:
     societe: '%env(SOCIETE)%'
     address: '%env(SOCIETE_ADDRESS1)%\n%env(SOCIETE_ADDRESS2)%'
-    siret: '%env(SOCIETE_SIRET)%'
+    siret: '%env(SOCIETE_IMMATRICULATION)%'
     societe_acronyme: '%env(SOCIETE_ACRONYME)%'
 services:
     # default configuration for services in *this* file
