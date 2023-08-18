@@ -77,7 +77,7 @@ class Commande
 
     public function getDateLivraison(): ?DateTimeInterface
     {
-        return $this->date_livraison;
+        return $this->mode_paiement === 'NP' ? null : $this->date_livraison;
     }
 
     public function setDateLivraison(?DateTimeInterface $date_livraison): self
@@ -131,7 +131,6 @@ class Commande
     public function setModePaiement(?string $mode_paiement): self
     {
         $this->mode_paiement = $mode_paiement === 'NP' ? null : $mode_paiement;
-        $this->date_livraison = $mode_paiement === 'NP' ? null : $this->date_livraison;
 
         return $this;
     }
