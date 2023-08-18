@@ -157,7 +157,7 @@ class CommandeController extends AbstractController
             $invoice->setType('Devis');
             $invoice->addParagraph($this->getParameter('devis_mentions'));
         } else {
-            $invoice->addParagraph("facture_mentions");
+            $invoice->addParagraph($this->getParameter("facture_mentions"));
         }
         $fileName = strtoupper($document) . '_' . $reference . '.pdf';
         $response = new Response($invoice->render($fileName, 'S'));
