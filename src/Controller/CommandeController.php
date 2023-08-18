@@ -155,10 +155,9 @@ class CommandeController extends AbstractController
         }
         if ($document == 'devis') {
             $invoice->setType('Devis');
-            $invoice->addParagraph("Devis gratuit et valable pour une durée de 15 jours ouvrés à partir de la date d'émission.");
-            $invoice->addParagraph("Document à retourner daté et signé, précédé de la mention « Bon pour accord ».");
+            $invoice->addParagraph($this->getParameter('devis_mentions'));
         } else {
-            $invoice->addParagraph("Conditions de règlement : Paiement à la livraison.");
+            $invoice->addParagraph("facture_mentions");
         }
         $fileName = strtoupper($document) . '_' . $reference . '.pdf';
         $response = new Response($invoice->render($fileName, 'S'));

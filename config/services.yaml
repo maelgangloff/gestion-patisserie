@@ -8,6 +8,8 @@ parameters:
     address: '%env(SOCIETE_ADDRESS1)%\n%env(SOCIETE_ADDRESS2)%'
     siret: '%env(SOCIETE_IMMATRICULATION)%'
     societe_acronyme: '%env(SOCIETE_ACRONYME)%'
+    facture_mentions: '%env(FACTURE_MENTIONS)%'
+    devis_mentions: '%env(DEVIS_MENTIONS)%'
 services:
     # default configuration for services in *this* file
     _defaults:
