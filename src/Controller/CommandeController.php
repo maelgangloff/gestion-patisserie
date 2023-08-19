@@ -185,7 +185,7 @@ class CommandeController extends AbstractController
         $invoice->setReference($reference);
         $invoice->setDate(($commande->getDateLivraison() ?? $commande->getDateLivraisonSouhaitee())->format('d/m/Y'));
         $invoice->setFrom($fromAddress);
-        $invoice->setTo([$client->__toString(), ...explode(PHP_EOL, strtoupper(Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC')->transliterate($client->getAddress())), $client->getEmail()]);
+        $invoice->setTo([$client->__toString(), ...explode(PHP_EOL, strtoupper(Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC')->transliterate($client->getAddress()))), $client->getEmail()]);
         $invoice->addItem("Commande", $commande->getCommande(), false, false, $commande->getMontant(), false, $commande->getMontant());
         $modePaiement = $commande->getModePaiement();
         $invoice->addTotal("Total TTC", $commande->getMontant(), true);
