@@ -173,7 +173,7 @@ class CommandeController extends AbstractController
 
     public static function makeInvoice(array $fromAddress, string $siret, string $reference, Commande $commande): InvoicePrinter
     {
-        function formatText(string $text): string {
+        function formatText(?string $text): ?string {
             return strtoupper(Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC')->transliterate($text));
         }
 
