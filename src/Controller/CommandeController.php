@@ -173,6 +173,10 @@ class CommandeController extends AbstractController
 
     public static function makeInvoice(array $fromAddress, string $siret, string $reference, Commande $commande): InvoicePrinter
     {
+        function formatText(string $text): string {
+            return strtoupper(Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC')->transliterate($text));
+        }
+
         $client = $commande->getClient();
         $invoice = new InvoicePrinter('A4', '€', 'fr');
         $invoice->setFontSizeProductDescription(10);
@@ -185,7 +189,7 @@ class CommandeController extends AbstractController
         $invoice->setReference($reference);
         $invoice->setDate(($commande->getDateLivraison() ?? $commande->getDateLivraisonSouhaitee())->format('d/m/Y'));
         $invoice->setFrom($fromAddress);
-        $invoice->setTo([$client->__toString(), ...explode(PHP_EOL, strtoupper(Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC')->transliterate($client->getAddress()))), $client->getEmail()]);
+        $invoice->setTo([$client->__toString(), ...explode(PHP_EOL, formatText($client->getAddress())), $client->getEmail()]);
         $invoice->addItem("Commande", $commande->getCommande(), false, false, $commande->getMontant(), false, $commande->getMontant());
         $modePaiement = $commande->getModePaiement();
         $invoice->addTotal("Total TTC", $commande->getMontant(), true);
@@ -195,7 +199,7 @@ class CommandeController extends AbstractController
             $invoice->addParagraph('Date de règlement: ' . $commande->getDateLivraison()->format('d/m/Y'));
             $invoice->addParagraph('Mode de règlement: ' . ($modePaiement === 'CB' ? 'Carte bancaire' : ($modePaiement === 'ESP' ? 'Espèces' : ($modePaiement === 'VIR' ? 'Virement' : 'Chèque'))));
         }
-        $invoice->setFooternote(strtoupper(Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC')->transliterate($fromAddress[0])) . ' - ' . $siret);
+        $invoice->setFooternote(formatText($fromAddress[0]) . ' - ' . $siret);
         return $invoice;
     }
 }
