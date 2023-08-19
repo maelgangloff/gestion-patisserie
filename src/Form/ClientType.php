@@ -16,22 +16,31 @@ class ClientType extends AbstractType
     {
         $builder
             ->add('nom', null, [
+                'label' => 'Nom',
                 'required' => true
             ])
             ->add('prenom', null, [
+                'label' => 'Prénom',
                 'required' => true
             ])
             ->add('telephone', TelType::class, [
+                'label' => 'Téléphone',
                 'required' => false
             ])
             ->add('email', EmailType::class, [
+                'label' => 'Courriel',
                 'required' => false
             ])
             ->add('pseudo_facebook', null, [
                 'label' => 'Pseudo Facebook',
                 'required' => false
             ])
+            ->add('address', TextareaType::class, [
+                'label' => 'Adresse postale',
+                'required' => false
+            ])
             ->add('commentaire', TextareaType::class, [
+                'label' => 'Commentaires',
                 'required' => false
             ]);
     }

@@ -38,6 +38,9 @@ class Client
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $email = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $address = null;
+
     public function __construct()
     {
         $this->commandes = new ArrayCollection();
@@ -151,6 +154,18 @@ class Client
     public function setEmail(?string $email): static
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): static
+    {
+        $this->address = $address;
 
         return $this;
     }
