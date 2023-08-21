@@ -21,6 +21,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\BodyRendererInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Transliterator;
 
@@ -139,7 +140,7 @@ class CommandeController extends AbstractController
     }
 
 
-    #[Route('/{ticket}/{document}', name: 'app_commande_document', requirements: ['document' => 'facture|devis'], methods: ['GET'])]
+    #[Route('/{ticket}/{document}', name: 'app_commande_document', requirements: ['document' => 'facture|devis', 'ticket' => Requirement::UUID_V4], methods: ['GET'])]
     public function getDocument(CommandeRepository $commandeRepository, string $ticket, string $document): Response
     {
         $commande = $commandeRepository->findOneBy(['doc_token' => $ticket]);
