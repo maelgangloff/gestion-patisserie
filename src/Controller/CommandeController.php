@@ -10,7 +10,6 @@ use DateTimeZone;
 use Doctrine\Persistence\ManagerRegistry;
 use Konekt\PdfInvoice\InvoicePrinter;
 use Ramsey\Uuid\Uuid;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +21,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\BodyRendererInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Transliterator;
 
 #[Route('/commande')]
@@ -138,32 +138,41 @@ class CommandeController extends AbstractController
         return $this->redirectToRoute('app_commande_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/{document}', name: 'app_commande_document', requirements: ['document' => 'facture|devis'], methods: ['GET'])]
-    public function generateDocument(Commande $commande, Request $request, string $document): Response
+
+    #[Route('/{ticket}/{document}', name: 'app_commande_document', requirements: ['document' => 'facture|devis'], methods: ['GET'])]
+    public function getDocument(CommandeRepository $commandeRepository, string $ticket, string $document): Response
     {
-        $token = $commande->getDocToken();
-        if (!$this->isGranted('ROLE_ADMIN')) {
-            if ($token == '' || $request->query->get('ticket') != $token || ($document == 'facture' && $commande->getDateLivraison() == null)) return new Response("Accès refusé", Response::HTTP_UNAUTHORIZED);
-        }
+        $commande = $commandeRepository->findOneBy(['doc_token' => $ticket]);
+        if ($commande === null) return new Response(null, Response::HTTP_NOT_FOUND);
+
+        if (!$this->isGranted('ROLE_ADMIN') && ($document == 'facture' && $commande->getDateLivraison() == null)) return new Response(null, Response::HTTP_UNAUTHORIZED);
+
         $reference = self::makeInvoiceReference($this->getParameter('societe_acronyme'), $commande);
         $invoice = self::makeInvoice([$this->getParameter('societe'), ...explode('\n', $this->getParameter('address'))], $this->getParameter('siret'), $reference, $commande);
-        if ($docToken = $commande->getDocToken()) {
-            $invoice->addTitle("Nota Bene:");
-            $invoice->addParagraph('Document disponible sur: https:' . $this->generateUrl(
-                    'app_commande_document', ['id' => $commande->getId(), 'ticket' => $docToken, 'document' => $document], UrlGeneratorInterface::NETWORK_PATH
-                ));
-        }
+
+        $invoice->addTitle("Nota Bene:");
+        $invoice->addParagraph('Document disponible sur: https:' . $this->generateUrl(
+                'app_commande_document', ['ticket' => $ticket, 'document' => $document], UrlGeneratorInterface::NETWORK_PATH));
+
         if ($document == 'devis') {
             $invoice->setType('Devis');
             $invoice->addParagraph($this->getParameter('devis_mentions'));
         } else {
             $invoice->addParagraph($this->getParameter("facture_mentions"));
         }
+
         $fileName = strtoupper($document) . '_' . $reference . '.pdf';
         $response = new Response($invoice->render($fileName, 'S'));
         $response->headers->set('Content-type', 'application/pdf');
         $response->headers->set('Content-Disposition', $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $fileName));
         return $response;
+    }
+
+
+    #[Route('/{id}/{document}', name: 'app_commande_document_old', requirements: ['document' => 'facture|devis', 'id' => '\d+'], methods: ['GET'])]
+    public function getDocumentOld(Request $request, string $document): Response
+    {
+        return $this->redirectToRoute('app_commande_document', ['ticket' => $request->query->get('ticket'), 'document' => $document]);
     }
 
     public static function makeInvoiceReference(string $societe_acronyme, Commande $commande): string
@@ -173,7 +182,8 @@ class CommandeController extends AbstractController
 
     public static function makeInvoice(array $fromAddress, string $siret, string $reference, Commande $commande): InvoicePrinter
     {
-        function formatText(?string $text): ?string {
+        function formatText(?string $text): ?string
+        {
             return strtoupper(Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC')->transliterate($text));
         }
 

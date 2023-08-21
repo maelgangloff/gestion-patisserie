@@ -55,7 +55,7 @@
         </tbody>
     </table>
 {% if commande.getDocToken() %}
-    {% set devis_url = url('app_commande_document', {'id': commande.id, 'ticket': commande.getDocToken(), 'document': 'devis'}) %}
+    {% set devis_url = url('app_commande_document', {'ticket': commande.docToken, 'ticket': commande.getDocToken(), 'document': 'devis'}) %}
        <p>Lien public du devis : <a href="{{ devis_url }}">{{ devis_url }}</a></p>
 {% endif %}
 

@@ -48,7 +48,7 @@
                     </td>
                     <td><b>{{ commande.montant|number_format(2) }} €</b></td>
                     <td><a class='btn btn-info btn-sm'
-                           href="{{ path('app_commande_document', {'id': commande.id, 'document': 'facture'}) }}"
+                           href="{{ path('app_commande_document', {'ticket': commande.docToken, 'document': 'facture'}) }}"
                            target="_blank">Facture</a>
                     </td>
                 </tr>
