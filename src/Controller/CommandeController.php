@@ -157,7 +157,7 @@ class CommandeController extends AbstractController
 
         if ($document == 'devis') {
             $invoice->setType('Devis');
-            $invoice->addParagraph($this->getParameter('devis_mentions'));
+            $invoice->addParagraph('Commande enregistrée le ' . $commande->getDatePriseCommande()->format('d/m/Y') . '. ' . $this->getParameter('devis_mentions'));
         } else {
             $invoice->addParagraph($this->getParameter("facture_mentions"));
         }
