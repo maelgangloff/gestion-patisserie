@@ -42,7 +42,10 @@
                                href="{{ path('app_commande_show', {'id': commande.id}) }}">Voir</a>
                             <a class='btn btn-sm btn-secondary'
                                href="{{ path('app_commande_edit', {'id': commande.id}) }}">Editer</a>
-                            {% if commande.dateLivraison is null %}
+                            {% if commande.dateLivraison is not null %}
+                                <a class="btn btn-sm btn-warning"
+                                   href="{{ path('app_commande_document', {'ticket': commande.docToken, 'document': 'facture'}) }}">Facture</a>
+                            {% elseif commande.prete %}
                                 <button type="button" class="btn btn-sm btn-warning dropdown-toggle"
                                         data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
@@ -56,7 +59,7 @@
                                 </div>
                             {% else %}
                                 <a class="btn btn-sm btn-warning"
-                                   href="{{ path('app_commande_document', {'ticket': commande.docToken, 'document': 'facture'}) }}">Facture</a>
+                                   href="{{ path('app_commande_document', {'ticket': commande.docToken, 'document': 'devis'}) }}">Devis</a>
                             {% endif %}
                         </div>
                     </td>
